@@ -1,0 +1,83 @@
+---
+- name: Install Python runtime
+  ansible.builtin.apt:
+    name: "{{ poll_runtime_packages }}"
+    state: present
+    update_cache: true
+
+- name: Ensure the poll group exists
+  ansible.builtin.group:
+    name: "{{ poll_group }}"
+    system: true
+
+- name: Ensure the poll service user exists
+  ansible.builtin.user:
+    name: "{{ poll_user }}"
+    group: "{{ poll_group }}"
+    system: true
+    shell: "{{ poll_shell }}"
+    home: "{{ poll_app_dir }}"
+    create_home: false
+
+- name: Ensure the application directory exists
+  ansible.builtin.file:
+    path: "{{ poll_app_dir }}"
+    state: directory
+    owner: "{{ poll_user }}"
+    group: "{{ poll_group }}"
+    mode: '0755'
+
+- name: Extract the poll application archive
+  ansible.builtin.unarchive:
+    src: "{{ poll_archive_src }}"
+    dest: "{{ poll_app_dir }}"
+    extra_opts: ['--strip-components=1']
+    owner: "{{ poll_user }}"
+    group: "{{ poll_group }}"
+    creates: "{{ poll_archive_marker }}"
+  notify: Restart poll
+
+- name: Install Python dependencies in a virtualenv
+  ansible.builtin.pip:
+    name: "{{ poll_python_requirements }}"
+    state: present
+    virtualenv: "{{ poll_venv_dir }}"
+    virtualenv_command: /usr/bin/python3 -m venv
+  become: true
+  become_user: "{{ poll_user }}"
+  notify: Restart poll
+
+- name: Ensure the environment directory exists
+  ansible.builtin.file:
+    path: "{{ poll_env_dir }}"
+    state: directory
+    owner: root
+    group: "{{ poll_group }}"
+    mode: '0750'
+
+- name: Render the poll environment file
+  ansible.builtin.template:
+    src: poll.env.j2
+    dest: "{{ poll_env_file }}"
+    owner: root
+    group: "{{ poll_group }}"
+    mode: "{{ poll_env_mode }}"
+  notify: Restart poll
+
+- name: Install the poll systemd unit
+  ansible.builtin.copy:
+    src: poll.service
+    dest: "{{ poll_service_unit }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart poll
+
+- name: Ensure the poll service is enabled and running
+  ansible.builtin.systemd:
+    name: "{{ poll_service_name }}"
+    enabled: true
+    state: started
+    daemon_reload: true

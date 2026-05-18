@@ -1,0 +1,38 @@
+---
+poll_app_dir: /opt/poll
+poll_venv_dir: "{{ poll_app_dir }}/venv"
+poll_user: poll
+poll_group: poll
+poll_shell: /usr/sbin/nologin
+
+poll_archive_src: "{{ playbook_dir }}/poll.tar"
+poll_archive_marker: "{{ poll_app_dir }}/app.py"
+
+poll_runtime_packages:
+  - python3
+  - python3-venv
+  - python3-pip
+
+poll_python_requirements:
+  - flask
+  - redis
+  - gunicorn
+
+poll_env_dir: /etc/poll
+poll_env_file: "{{ poll_env_dir }}/poll.env"
+poll_env_mode: '0640'
+
+poll_service_name: poll
+poll_service_unit: /etc/systemd/system/poll.service
+
+poll_bind: '0.0.0.0:80'
+poll_workers: 2
+
+# --- Redis connection (resolved from the redis role) ---------------------
+poll_redis_host: "{{ hostvars[groups['redis'][0]].ansible_host | default(hostvars[groups['redis'][0]].inventory_hostname) }}"
+
+# --- Ballot options (override per-environment if needed) -----------------
+poll_option_a: Ansible
+poll_option_b: Chef
+poll_option_c: Puppet
+poll_option_d: SaltStack

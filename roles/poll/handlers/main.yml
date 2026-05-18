@@ -1,0 +1,9 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart poll
+  ansible.builtin.service:
+    name: "{{ poll_service_name }}"
+    state: restarted
