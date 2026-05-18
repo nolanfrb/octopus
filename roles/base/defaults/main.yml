@@ -1,0 +1,7 @@
+---
+base_packages:
+  - python3-apt
+  - gnupg
+  - curl
+  - htop
+  - vim
