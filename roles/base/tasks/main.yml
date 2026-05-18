@@ -1,0 +1,17 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Upgrade all packages
+  apt:
+    upgrade: "yes"
+
+- name: Install base packages
+  apt:
+    name:
+      - nano
+      - curl
+      - git
+      - python3
+      - ufw
+    state: present
