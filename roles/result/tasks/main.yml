@@ -1,0 +1,83 @@
+---
+- name: Install Node.js runtime
+  ansible.builtin.apt:
+    name: "{{ result_runtime_packages }}"
+    state: present
+    update_cache: true
+
+- name: Ensure the result group exists
+  ansible.builtin.group:
+    name: "{{ result_group }}"
+    system: true
+
+- name: Ensure the result service user exists
+  ansible.builtin.user:
+    name: "{{ result_user }}"
+    group: "{{ result_group }}"
+    system: true
+    shell: "{{ result_shell }}"
+    home: "{{ result_app_dir }}"
+    create_home: false
+
+- name: Ensure the application directory exists
+  ansible.builtin.file:
+    path: "{{ result_app_dir }}"
+    state: directory
+    owner: "{{ result_user }}"
+    group: "{{ result_group }}"
+    mode: '0755'
+
+- name: Extract the result application archive
+  ansible.builtin.unarchive:
+    src: "{{ result_archive_src }}"
+    dest: "{{ result_app_dir }}"
+    extra_opts: ['--strip-components=1']
+    owner: "{{ result_user }}"
+    group: "{{ result_group }}"
+    creates: "{{ result_archive_marker }}"
+  notify: Restart result
+
+- name: Install Node.js dependencies
+  community.general.npm:
+    path: "{{ result_app_dir }}"
+    state: present
+    ci: false
+  become: true
+  become_user: "{{ result_user }}"
+  notify: Restart result
+
+- name: Ensure the environment directory exists
+  ansible.builtin.file:
+    path: "{{ result_env_dir }}"
+    state: directory
+    owner: root
+    group: "{{ result_group }}"
+    mode: '0750'
+
+- name: Render the result environment file
+  ansible.builtin.template:
+    src: result.env.j2
+    dest: "{{ result_env_file }}"
+    owner: root
+    group: "{{ result_group }}"
+    mode: "{{ result_env_mode }}"
+  no_log: true
+  notify: Restart result
+
+- name: Install the result systemd unit
+  ansible.builtin.copy:
+    src: result.service
+    dest: "{{ result_service_unit }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart result
+
+- name: Ensure the result service is enabled and running
+  ansible.builtin.systemd:
+    name: "{{ result_service_name }}"
+    enabled: true
+    state: started
+    daemon_reload: true

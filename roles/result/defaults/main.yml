@@ -1,0 +1,27 @@
+---
+result_app_dir: /opt/result
+result_user: result
+result_group: result
+result_shell: /usr/sbin/nologin
+
+result_archive_src: "{{ playbook_dir }}/result.tar"
+result_archive_marker: "{{ result_app_dir }}/package.json"
+
+result_runtime_packages:
+  - nodejs
+  - npm
+
+result_env_dir: /etc/result
+result_env_file: "{{ result_env_dir }}/result.env"
+result_env_mode: '0640'
+
+result_service_name: result
+result_service_unit: /etc/systemd/system/result.service
+
+# --- Postgres connection (resolved from the postgresql role) -------------
+result_postgres_host: "{{ hostvars[groups['postgresql'][0]].ansible_host | default(hostvars[groups['postgresql'][0]].inventory_hostname) }}"
+result_postgres_port: "{{ hostvars[groups['postgresql'][0]].postgresql_port | default(5432) }}"
+result_postgres_user: "{{ hostvars[groups['postgresql'][0]].postgresql_user | default('paul') }}"
+result_postgres_db: "{{ hostvars[groups['postgresql'][0]].postgresql_database | default('paul') }}"
+# result_postgres_password is provided (vaulted) via group_vars/all.yml as postgresql_password.
+result_postgres_password: "{{ postgresql_password }}"
