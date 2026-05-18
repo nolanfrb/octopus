@@ -1,0 +1,22 @@
+---
+redis_bind:
+  - '0.0.0.0' # so the worker host can reach Redis over the network
+  - '-::*' # listen on all IPv6 addresses too
+redis_port: 6379
+
+redis_loglevel: notice
+redis_databases: 16
+redis_pidfile: /run/redis/redis-server.pid
+redis_logfile: /var/log/redis/redis-server.log
+redis_data_dir: /var/lib/redis
+
+# Set redis_password in group_vars/all.yml (vaulted) to enable AUTH.
+# When empty, protected-mode falls back to "no" so the worker can connect.
+redis_password: ''
+
+redis_maxmemory: '' # e.g. "256mb"  — empty disables the limit
+redis_maxmemory_policy: noeviction
+
+redis_appendonly: true
+
+redis_enabled: true # start automatically on boot

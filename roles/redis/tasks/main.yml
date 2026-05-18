@@ -1,0 +1,21 @@
+---
+- name: Ensure Redis is installed
+  ansible.builtin.apt:
+    name: '{{ redis_package }}'
+    state: present
+    update_cache: true
+
+- name: Render redis.conf from Jinja2 template
+  ansible.builtin.template:
+    src: redis.conf.j2
+    dest: '{{ redis_conf_path }}'
+    owner: redis
+    group: redis
+    mode: '{{ redis_conf_mode }}'
+  notify: Restart redis
+
+- name: Ensure Redis is enabled and running
+  ansible.builtin.service:
+    name: '{{ redis_package }}'
+    state: started
+    enabled: '{{ redis_enabled }}'
