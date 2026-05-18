@@ -1,0 +1,12 @@
+---
+# Immutable role internals — paths, package names and OS-imposed identities.
+# Behavior knobs live in defaults/main.yml (overridable from group_vars).
+
+postgresql_package: 'postgresql-{{ postgresql_version }}'
+postgresql_psycopg2_package: python3-psycopg2
+
+postgresql_owner: postgres
+postgresql_group: postgres
+
+postgresql_pg_hba_file: '{{ postgresql_conf_dir }}/pg_hba.conf'
+postgresql_schema_remote_path: /tmp/schema.sql

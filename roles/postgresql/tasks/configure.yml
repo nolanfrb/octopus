@@ -1,0 +1,26 @@
+---
+- name: Ensure PostgreSQL is enabled and running
+  ansible.builtin.service:
+    name: '{{ postgresql_service }}'
+    enabled: '{{ postgresql_enabled }}'
+    state: started
+
+- name: Configure listen_addresses via ALTER SYSTEM
+  community.postgresql.postgresql_set:
+    name: listen_addresses
+    value: '{{ postgresql_listen_addresses }}'
+  become: true
+  become_user: '{{ postgresql_owner }}'
+  notify: Restart PostgreSQL
+
+- name: Render pg_hba.conf from Jinja2 template
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: '{{ postgresql_pg_hba_file }}'
+    owner: '{{ postgresql_owner }}'
+    group: '{{ postgresql_group }}'
+    mode: '{{ postgresql_pg_hba_mode }}'
+  notify: Reload PostgreSQL
+
+- name: Flush handlers to apply config changes before seeding
+  ansible.builtin.meta: flush_handlers

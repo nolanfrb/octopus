@@ -1,0 +1,9 @@
+---
+- name: Install PostgreSQL
+  ansible.builtin.import_tasks: init.yml
+
+- name: Configure PostgreSQL
+  ansible.builtin.import_tasks: configure.yml
+
+- name: Seed the application database
+  ansible.builtin.import_tasks: seed.yml

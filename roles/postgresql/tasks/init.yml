@@ -1,0 +1,24 @@
+---
+- name: Install PostgreSQL prerequisites
+  ansible.builtin.apt:
+    name:
+      - '{{ postgresql_psycopg2_package }}'
+    state: present
+    update_cache: true
+
+- name: Add the PGDG apt repository
+  ansible.builtin.deb822_repository:
+    name: pgdg
+    types: deb
+    uris: '{{ postgresql_pgdg_repo_uri }}'
+    suites: '{{ ansible_distribution_release }}-pgdg'
+    components: main
+    signed_by: '{{ postgresql_pgdg_repo_key }}'
+    state: present
+    enabled: true
+
+- name: Install PostgreSQL {{ postgresql_version }}
+  ansible.builtin.apt:
+    name: '{{ postgresql_package }}'
+    state: present
+    update_cache: true

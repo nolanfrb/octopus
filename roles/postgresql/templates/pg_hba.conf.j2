@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+# Managed by Ansible — do not edit manually.
+#
+# PostgreSQL Client Authentication Configuration File
+# See: https://www.postgresql.org/docs/{{ postgresql_version }}/auth-pg-hba-conf.html
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# Unix-socket connections (local maintenance via the postgres OS user)
+local   all             postgres                                peer
+local   all             all                                     peer
+
+# IPv4 / IPv6 loopback (local admin tooling)
+host    all             all             127.0.0.1/32            scram-sha-256
+host    all             all             ::1/128                 scram-sha-256
+
+# Application access — only the {{ postgresql_database }} database,
+# only the {{ postgresql_user }} user, only from approved networks.
+{% for cidr in postgresql_allowed_hosts %}
+host    {{ postgresql_database }}    {{ postgresql_user }}    {{ cidr }}    scram-sha-256
+{% endfor %}

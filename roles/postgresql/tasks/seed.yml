@@ -1,0 +1,44 @@
+---
+- name: Create the application database
+  community.postgresql.postgresql_db:
+    name: '{{ postgresql_database }}'
+    state: present
+  become: true
+  become_user: '{{ postgresql_owner }}'
+
+- name: Create the application user with limited privileges
+  community.postgresql.postgresql_user:
+    name: '{{ postgresql_user }}'
+    password: '{{ postgresql_password }}'
+    db: '{{ postgresql_database }}'
+    role_attr_flags: '{{ postgresql_user_attr_flags }}'
+    state: present
+  become: true
+  become_user: '{{ postgresql_owner }}'
+  no_log: true
+
+- name: Upload the schema script
+  ansible.builtin.copy:
+    src: schema.sql
+    dest: '{{ postgresql_schema_remote_path }}'
+    owner: '{{ postgresql_owner }}'
+    group: '{{ postgresql_group }}'
+    mode: '{{ postgresql_schema_mode }}'
+
+- name: Apply the schema to {{ postgresql_database }}
+  community.postgresql.postgresql_script:
+    db: '{{ postgresql_database }}'
+    path: '{{ postgresql_schema_remote_path }}'
+  become: true
+  become_user: '{{ postgresql_owner }}'
+
+- name: Grant table privileges to {{ postgresql_user }}
+  community.postgresql.postgresql_privs:
+    db: '{{ postgresql_database }}'
+    roles: '{{ postgresql_user }}'
+    objs: '{{ postgresql_table }}'
+    privs: '{{ postgresql_table_privs }}'
+    type: '{{ postgresql_table_type }}'
+    state: present
+  become: true
+  become_user: '{{ postgresql_owner }}'

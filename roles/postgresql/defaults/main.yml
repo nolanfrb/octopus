@@ -1,0 +1,42 @@
+---
+# --- Version & paths -----------------------------------------------------
+postgresql_version: '16'
+postgresql_port: 5432
+
+postgresql_conf_dir: '/etc/postgresql/{{ postgresql_version }}/main'
+postgresql_service: 'postgresql@{{ postgresql_version }}-main'
+
+# --- Networking ----------------------------------------------------------
+postgresql_listen_addresses: '*'
+
+# Networks allowed to authenticate against the application database.
+# Override per-host or per-group with a tighter list in production.
+postgresql_allowed_hosts:
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+
+# --- Application database & user -----------------------------------------
+postgresql_database: paul
+postgresql_user: paul
+# postgresql_password is defined (encrypted) in group_vars/all.yml
+# via `ansible-vault encrypt_string`.
+
+# --- PGDG official repository --------------------------------------------
+postgresql_pgdg_repo_uri: 'https://apt.postgresql.org/pub/repos/apt'
+postgresql_pgdg_repo_key: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
+
+# --- File modes ----------------------------------------------------------
+postgresql_pg_hba_mode: '0640'
+postgresql_schema_mode: '0644'
+
+# --- Application user attributes -----------------------------------------
+postgresql_user_attr_flags: 'NOSUPERUSER,NOCREATEDB,NOCREATEROLE,LOGIN'
+
+# --- Application table privileges ----------------------------------------
+postgresql_table: votes
+postgresql_table_privs: 'SELECT,INSERT,UPDATE'
+postgresql_table_type: table
+
+# --- Service -------------------------------------------------------------
+postgresql_enabled: true
