@@ -1,0 +1,83 @@
+---
+- name: Install JDK and Maven build dependencies
+  ansible.builtin.apt:
+    name: "{{ worker_build_packages }}"
+    state: present
+    update_cache: true
+
+- name: Ensure the worker group exists
+  ansible.builtin.group:
+    name: "{{ worker_group }}"
+    system: true
+
+- name: Ensure the worker service user exists
+  ansible.builtin.user:
+    name: "{{ worker_user }}"
+    group: "{{ worker_group }}"
+    system: true
+    shell: "{{ worker_shell }}"
+    home: "{{ worker_app_dir }}"
+    create_home: false
+
+- name: Ensure the application directory exists
+  ansible.builtin.file:
+    path: "{{ worker_app_dir }}"
+    state: directory
+    owner: "{{ worker_user }}"
+    group: "{{ worker_group }}"
+    mode: '0755'
+
+- name: Extract the worker application archive
+  ansible.builtin.unarchive:
+    src: "{{ worker_archive_src }}"
+    dest: "{{ worker_app_dir }}"
+    extra_opts: ['--strip-components=1']
+    owner: "{{ worker_user }}"
+    group: "{{ worker_group }}"
+    creates: "{{ worker_archive_marker }}"
+  notify: Restart worker
+
+- name: Build the worker fat jar with Maven
+  ansible.builtin.command:
+    cmd: mvn -B -q -Dmaven.repo.local={{ worker_maven_local_repo }} package
+    chdir: "{{ worker_app_dir }}"
+    creates: "{{ worker_jar_path }}"
+  become: true
+  become_user: "{{ worker_user }}"
+  notify: Restart worker
+
+- name: Ensure the environment directory exists
+  ansible.builtin.file:
+    path: "{{ worker_env_dir }}"
+    state: directory
+    owner: root
+    group: "{{ worker_group }}"
+    mode: '0750'
+
+- name: Render the worker environment file
+  ansible.builtin.template:
+    src: worker.env.j2
+    dest: "{{ worker_env_file }}"
+    owner: root
+    group: "{{ worker_group }}"
+    mode: "{{ worker_env_mode }}"
+  no_log: true
+  notify: Restart worker
+
+- name: Install the worker systemd unit
+  ansible.builtin.copy:
+    src: worker.service
+    dest: "{{ worker_service_unit }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart worker
+
+- name: Ensure the worker service is enabled and running
+  ansible.builtin.systemd:
+    name: "{{ worker_service_name }}"
+    enabled: true
+    state: started
+    daemon_reload: true

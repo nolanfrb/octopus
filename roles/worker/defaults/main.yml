@@ -1,0 +1,33 @@
+---
+worker_app_dir: /opt/worker
+worker_user: worker
+worker_group: worker
+worker_shell: /usr/sbin/nologin
+
+worker_archive_src: "{{ playbook_dir }}/worker.tar"
+worker_archive_marker: "{{ worker_app_dir }}/pom.xml"
+
+worker_build_packages:
+  - default-jdk
+  - maven
+  - ca-certificates
+
+worker_jar_path: "{{ worker_app_dir }}/target/worker-jar-with-dependencies.jar"
+worker_maven_local_repo: "{{ worker_app_dir }}/.m2"
+
+worker_env_dir: /etc/worker
+worker_env_file: "{{ worker_env_dir }}/worker.env"
+worker_env_mode: '0640'
+
+worker_service_name: worker
+worker_service_unit: /etc/systemd/system/worker.service
+
+# --- Redis connection (resolved from the redis role) ---------------------
+worker_redis_host: "{{ hostvars[groups['redis'][0]].ansible_host | default(hostvars[groups['redis'][0]].inventory_hostname) }}"
+
+# --- Postgres connection (resolved from the postgresql role) -------------
+worker_postgres_host: "{{ hostvars[groups['postgresql'][0]].ansible_host | default(hostvars[groups['postgresql'][0]].inventory_hostname) }}"
+worker_postgres_port: "{{ hostvars[groups['postgresql'][0]].postgresql_port | default(5432) }}"
+worker_postgres_user: "{{ hostvars[groups['postgresql'][0]].postgresql_user | default('paul') }}"
+worker_postgres_db: "{{ hostvars[groups['postgresql'][0]].postgresql_database | default('paul') }}"
+worker_postgres_password: "{{ postgresql_password }}"
