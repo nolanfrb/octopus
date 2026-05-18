@@ -1,0 +1,42 @@
+---
+- name: Apply the base configuration to every managed host
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - base
+
+- name: Provision the Redis vote queue
+  hosts: redis
+  become: true
+  gather_facts: true
+  roles:
+    - redis
+
+- name: Provision the PostgreSQL vote store
+  hosts: postgresql
+  become: true
+  gather_facts: true
+  roles:
+    - postgresql
+
+- name: Deploy the poll web client
+  hosts: poll
+  become: true
+  gather_facts: true
+  roles:
+    - poll
+
+- name: Deploy the vote worker
+  hosts: worker
+  become: true
+  gather_facts: true
+  roles:
+    - worker
+
+- name: Deploy the result web client
+  hosts: result
+  become: true
+  gather_facts: true
+  roles:
+    - result
