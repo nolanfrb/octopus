@@ -10,7 +10,7 @@
   community.postgresql.postgresql_user:
     name: '{{ postgresql_user }}'
     password: '{{ postgresql_password }}'
-    db: '{{ postgresql_database }}'
+    login_db: '{{ postgresql_database }}'
     role_attr_flags: '{{ postgresql_user_attr_flags }}'
     state: present
   become: true
@@ -27,14 +27,14 @@
 
 - name: Apply the schema to {{ postgresql_database }}
   community.postgresql.postgresql_script:
-    db: '{{ postgresql_database }}'
+    login_db: '{{ postgresql_database }}'
     path: '{{ postgresql_schema_remote_path }}'
   become: true
   become_user: '{{ postgresql_owner }}'
 
 - name: Grant table privileges to {{ postgresql_user }}
   community.postgresql.postgresql_privs:
-    db: '{{ postgresql_database }}'
+    login_db: '{{ postgresql_database }}'
     roles: '{{ postgresql_user }}'
     objs: '{{ postgresql_table }}'
     privs: '{{ postgresql_table_privs }}'
