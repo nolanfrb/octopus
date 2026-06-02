@@ -5,4 +5,4 @@ base_packages:
   - curl
   - htop
   - vim
-  - acl              # required for Ansible `become_user` on unprivileged users
+  - acl
