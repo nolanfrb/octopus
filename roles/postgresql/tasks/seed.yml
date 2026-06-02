@@ -18,6 +18,7 @@
   no_log: true
 
 - name: Upload the schema script
+  register: schema
   ansible.builtin.copy:
     src: schema.sql
     dest: '{{ postgresql_schema_remote_path }}'
@@ -31,6 +32,7 @@
     path: '{{ postgresql_schema_remote_path }}'
   become: true
   become_user: '{{ postgresql_owner }}'
+  when: schema.changed
 
 - name: Grant table privileges to {{ postgresql_user }}
   community.postgresql.postgresql_privs:
