@@ -1,6 +1,7 @@
 ---
 - name: Apply the base configuration to every managed host
   hosts: all
+  become: true
   gather_facts: true
   roles:
     - base
