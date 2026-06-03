@@ -1,20 +1,20 @@
-<div align="center">
+
 
 # 🐙 Octopus
 
 ### *Grow tentacles and control machines*
 
-[![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white)](https://www.ansible.com/)
-[![Debian](https://img.shields.io/badge/Debian%2013-A81D33?style=for-the-badge&logo=debian&logoColor=white)](https://www.debian.org/)
-[![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL%2016-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com/)
+[Ansible](https://www.ansible.com/)
+[Debian](https://www.debian.org/)
+[Redis](https://redis.io/)
+[PostgreSQL](https://www.postgresql.org/)
+[Python](https://www.python.org/)
+[Node.js](https://nodejs.org/)
+[Java](https://www.java.com/)
 
 **Epitech · G-DOP-400 · DevOps Module**
 
-</div>
+
 
 ---
 
@@ -34,13 +34,15 @@ Deploy the `poll-app` micro-service stack onto **5 different machines** using An
 
 The application is composed of four services and two data stores:
 
-| Service       | Technology       | Role                                                                  |
-| ------------- | ---------------- | --------------------------------------------------------------------- |
-| **Poll**      | Python · Flask   | Front-end web client that collects user votes                         |
-| **Redis**     | Redis            | Queue that buffers incoming votes                                     |
-| **Worker**    | Java             | Consumes votes from Redis and persists them into PostgreSQL           |
-| **PostgreSQL**| PostgreSQL 16    | Stores the votes durably                                              |
-| **Result**    | Node.js          | Front-end web client that reads the database and displays the results |
+
+| Service        | Technology     | Role                                                                  |
+| -------------- | -------------- | --------------------------------------------------------------------- |
+| **Poll**       | Python · Flask | Front-end web client that collects user votes                         |
+| **Redis**      | Redis          | Queue that buffers incoming votes                                     |
+| **Worker**     | Java           | Consumes votes from Redis and persists them into PostgreSQL           |
+| **PostgreSQL** | PostgreSQL 16  | Stores the votes durably                                              |
+| **Result**     | Node.js        | Front-end web client that reads the database and displays the results |
+
 
 ```
             ┌─────────┐                       ┌─────────┐
@@ -100,31 +102,38 @@ The application is composed of four services and two data stores:
 Six Ansible roles cover the full deployment.
 
 ### `base`
+
 Applied to **every** machine.
+
 - Installs useful system packages with `apt`.
 - Configures the instance with sensible defaults (everyday tools, system utilities).
 - Avoids any useless or oversized package.
 
 ### `redis`
+
 - Installs Redis.
 - Sets up Redis and ensures the service is active.
 
 ### `postgresql`
+
 - Installs PostgreSQL 16.
-- Creates a database user `paul` with the password `democracyIsFragile` and **limited** permissions.
+- Creates a database user `paul` with a password and **limited** permissions.
 - Creates the `paul` database and applies its schema.
 - ⚠️ The `paul` user is a *database* user — **not** a Linux user.
 
 ### `poll`
+
 - Uploads the `poll` service archive.
 - Installs its dependencies.
 - Runs the Flask web client on **port 80**.
 
 ### `worker`
+
 - Uploads the `worker` service archive.
 - Installs its dependencies, builds and runs the worker.
 
 ### `result`
+
 - Uploads the `result` service archive.
 - Installs its dependencies.
 - Runs the Node.js web client on **port 80**.
@@ -135,13 +144,15 @@ Applied to **every** machine.
 
 The inventory **must** declare 5 groups, each containing a single instance:
 
-| Group         | Instance        |
-| ------------- | --------------- |
-| `redis`       | `redis-1`       |
-| `postgresql`  | `postgresql-1`  |
-| `poll`        | `poll-1`        |
-| `result`      | `result-1`      |
-| `worker`      | `worker-1`      |
+
+| Group        | Instance       |
+| ------------ | -------------- |
+| `redis`      | `redis-1`      |
+| `postgresql` | `postgresql-1` |
+| `poll`       | `poll-1`       |
+| `result`     | `result-1`     |
+| `worker`     | `worker-1`     |
+
 
 All five hosts run **Debian 13**. They can run locally, but a cloud provider is strongly recommended. Be mindful of credit consumption — upcoming DevOps projects will need cloud resources too.
 
@@ -151,7 +162,7 @@ All five hosts run **Debian 13**. They can run locally, but a cloud provider is 
 
 - The playbook is launched with a custom inventory file named `production`.
 - Connection happens as a **normal user** (not `root`) able to use `sudo`.
-- The Ansible Galaxy [**Community** namespace](https://galaxy.ansible.com/ui/namespaces/community/) collections are allowed.
+- The Ansible Galaxy **[Community** namespace](https://galaxy.ansible.com/ui/namespaces/community/) collections are allowed.
 - **Containers (Docker, Podman, …) and any other Galaxy namespace are strictly forbidden.**
 - Prefer dedicated modules (e.g. `deb822_repository`, `pip`) over `command` / `shell` / `raw`.
 - Every service is managed by **systemd** and starts on boot.
@@ -177,7 +188,7 @@ The project is evaluated with the following commands:
 ```bash
 # 1. Provide the vault password
 export ANSIBLE_VAULT_PASSWORD_FILE=/tmp/.vault_pass
-echo verySecretPassword > /tmp/.vault_pass
+echo AWeakPasswordThatNeedToBechanged > /tmp/.vault_pass
 
 # 2. Run the playbook against the production inventory
 ansible-playbook -i production playbook.yml
@@ -200,8 +211,7 @@ Once the playbook finishes:
 
 **Nolan Fribault** — Epitech, 2nd year DevOps module *(G-DOP-400)*
 
-<div align="center">
+**Ely Delva** — Epitech, 2nd year DevOps module *(G-DOP-400)*
 
 *Built with ❤️ and a lot of YAML.*
 
-</div>
