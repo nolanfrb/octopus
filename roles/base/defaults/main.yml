@@ -10,3 +10,4 @@ base_packages:
   - fail2ban
   - unattended-upgrades
   - auditd
+  - git
