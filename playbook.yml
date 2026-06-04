@@ -5,6 +5,7 @@
   gather_facts: true
   roles:
     - base
+  tags: base
 
 - name: Provision the Redis vote queue
   hosts: redis
@@ -12,6 +13,7 @@
   gather_facts: false
   roles:
     - redis
+  tags: redis
 
 - name: Provision the PostgreSQL vote store
   hosts: postgresql
@@ -19,6 +21,7 @@
   gather_facts: false
   roles:
     - postgresql
+  tags: postgresql
 
 - name: Deploy the poll web client
   hosts: poll
@@ -26,6 +29,7 @@
   gather_facts: false
   roles:
     - poll
+  tags: poll
 
 - name: Deploy the vote worker
   hosts: worker
@@ -33,6 +37,7 @@
   gather_facts: false
   roles:
     - worker
+  tags: worker
 
 - name: Deploy the result web client
   hosts: result
@@ -40,3 +45,4 @@
   gather_facts: false
   roles:
     - result
+  tags: result
