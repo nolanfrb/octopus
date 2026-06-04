@@ -6,8 +6,5 @@ base_packages:
   - htop
   - vim
   - acl
-  - ufw
   - fail2ban
-  - unattended-upgrades
-  - auditd
-  - git
+  - ufw
