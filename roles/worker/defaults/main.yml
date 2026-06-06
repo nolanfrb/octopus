@@ -24,6 +24,8 @@ worker_service_unit: /etc/systemd/system/worker.service
 
 # --- Redis connection (resolved from the redis role) ---------------------
 worker_redis_host: "{{ hostvars[groups['redis'][0]].ansible_host | default(hostvars[groups['redis'][0]].inventory_hostname) }}"
+# redis_password is provided (vaulted) via group_vars/all.yml. Empty disables AUTH.
+worker_redis_password: "{{ redis_password | default('') }}"
 
 # --- Postgres connection (resolved from the postgresql role) -------------
 worker_postgres_host: "{{ hostvars[groups['postgresql'][0]].ansible_host | default(hostvars[groups['postgresql'][0]].inventory_hostname) }}"

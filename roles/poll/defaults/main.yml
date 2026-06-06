@@ -30,6 +30,8 @@ poll_workers: 2
 
 # --- Redis connection (resolved from the redis role) ---------------------
 poll_redis_host: "{{ hostvars[groups['redis'][0]].ansible_host | default(hostvars[groups['redis'][0]].inventory_hostname) }}"
+# redis_password is provided (vaulted) via group_vars/all.yml. Empty disables AUTH.
+poll_redis_password: "{{ redis_password | default('') }}"
 
 # --- Ballot options (override per-environment if needed) -----------------
 poll_option_a: Ansible
