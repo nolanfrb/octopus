@@ -9,7 +9,6 @@ poll_archive_src: "{{ playbook_dir }}/poll.tar"
 poll_archive_marker: "{{ poll_app_dir }}/app.py"
 
 poll_runtime_packages:
-  - python3
   - python3-venv
   - python3-pip
 

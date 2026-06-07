@@ -1,6 +1,7 @@
 ---
 base_packages:
   - python3-apt
+  - python3
   - gnupg
   - curl
   - htop
